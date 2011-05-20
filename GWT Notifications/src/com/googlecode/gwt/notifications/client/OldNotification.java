@@ -1,7 +1,7 @@
 package com.googlecode.gwt.notifications.client;
 
 
-public class Notification {
+public class OldNotification {
 	public static native boolean isDesktopNotificationSupported() /*-{
 		return typeof $wnd.webkitNotifications != "undefined";
 	}-*/;
@@ -28,12 +28,12 @@ public class Notification {
 	private String content;
 	private boolean byUrl;
 	
-	public Notification(String contentUrl) {
+	public OldNotification(String contentUrl) {
 		this.contentUrl = contentUrl;
 		this.byUrl = true;
 	}
 	
-	public Notification(String iconUrl, String title, String content) {
+	public OldNotification(String iconUrl, String title, String content) {
 		this.iconUrl = iconUrl;
 		this.title = title;
 		this.content = content;
