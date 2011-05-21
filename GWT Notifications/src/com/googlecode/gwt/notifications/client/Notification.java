@@ -2,6 +2,8 @@ package com.googlecode.gwt.notifications.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.PartialSupport;
+import com.google.gwt.user.client.Window;
+import com.googlecode.gwt.notifications.client.event.RequestPermissionHandler;
 
 @PartialSupport
 public class Notification {
@@ -33,9 +35,11 @@ public class Notification {
 	
 	private static final NotificationImpl impl = GWT.create(NotificationImpl.class);
 	
-	private int permission = impl.checkPermission();
+	private int permission = -1;
 
 	private static NotificationSupportDetector supportDetectorImpl;
+
+	private static Notification notification;
 	
 	//TODO: Some variable
 	
@@ -47,6 +51,7 @@ public class Notification {
 	 * @return true if user allow to use notification
 	 */
 	public boolean isNotificationAllowed() {
+		checkPermission();
 		return permission == NotificationImpl.PERMISSION_ALLOWED;
 	}
 	
@@ -56,6 +61,7 @@ public class Notification {
 	 * @return true if user doesn't set permission (never choose 'Allow' or 'Deny')
 	 */
 	public boolean isNotificationNotAllowed() {
+		checkPermission();
 		return permission == NotificationImpl.PERMISSION_NOT_ALLOWED;
 	}
 	
@@ -65,6 +71,7 @@ public class Notification {
 	 * @return true if user deny to use notification
 	 */
 	public boolean isNotificationDenied() {
+		checkPermission();
 		return permission == NotificationImpl.PERMISSION_DENIED;
 	}
 	
@@ -73,7 +80,19 @@ public class Notification {
 	 * @return
 	 */
 	public int checkPermission() {
+		if (permission == -1) {
+			permission = impl.checkPermission();
+		}
 		return permission;
+	}
+	
+	public void requestPermission() {
+		impl.requestPermission(new RequestPermissionHandler() {
+			@Override
+			public void onPermissionReady() {
+				Window.alert("OK fff");
+			}
+		});
 	}
 	
 	public static boolean isSupported() {
@@ -85,6 +104,16 @@ public class Notification {
 			supportDetectorImpl = GWT.create(NotificationSupportDetector.class);
 		}
 		return supportDetectorImpl;
+	}
+	
+	public static Notification createIfSupported() {
+		if (isSupported()) {
+			if (notification == null) {
+				notification =  new Notification();
+			}
+			return notification;
+		}
+		return null;
 	}
 
 }
