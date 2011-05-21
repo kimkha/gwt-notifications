@@ -12,18 +12,20 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class GWT_Notifications implements EntryPoint {
 	public void onModuleLoad() {
+		final Notification no = Notification.createIfSupported();
 		HTML notif = new HTML();
-		if (OldNotification.isDesktopNotificationSupported()) {
-			notif.setText("Supported");
+		if (Notification.isSupported()) {
+			notif.setText("Supported "+no.checkPermission());
 		} else {
 			notif.setText("Unsupported");
 		}
-		final OldNotification no = new OldNotification("http://www.gstatic.com/codesite/ph/images/defaultlogo.png", "Demo", "Demo content");
+		//final OldNotification no = new OldNotification("http://www.gstatic.com/codesite/ph/images/defaultlogo.png", "Demo", "Demo content");
 		Anchor link = new Anchor("Run!");
 		link.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				no.fire();
+				//no.fire();
+				no.requestPermission();
 			}
 		});
 		RootPanel.get().add(notif);
