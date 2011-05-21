@@ -2,7 +2,6 @@ package com.googlecode.gwt.notifications.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.PartialSupport;
-import com.google.gwt.user.client.Window;
 import com.googlecode.gwt.notifications.client.event.RequestPermissionHandler;
 
 @PartialSupport
@@ -86,13 +85,12 @@ public class Notification {
 		return permission;
 	}
 	
-	public void requestPermission() {
-		impl.requestPermission(new RequestPermissionHandler() {
-			@Override
-			public void onPermissionReady() {
-				Window.alert("OK fff");
-			}
-		});
+	public static void requestPermission() {
+		impl.requestPermission();
+	}
+	
+	public static void requestPermission(RequestPermissionHandler handler) {
+		impl.requestPermission(handler);
 	}
 	
 	public static boolean isSupported() {
