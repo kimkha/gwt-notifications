@@ -25,7 +25,7 @@ public class GWT_Notifications implements EntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				//no.fire();
-				no.requestPermission();
+				Notification.requestPermission();
 			}
 		});
 		RootPanel.get().add(notif);
