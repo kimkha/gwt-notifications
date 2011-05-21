@@ -2,7 +2,7 @@ package com.googlecode.gwt.notifications.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.PartialSupport;
-import com.googlecode.gwt.notifications.client.event.RequestPermissionHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 @PartialSupport
 public class Notification {
@@ -34,7 +34,7 @@ public class Notification {
 	
 	private static final NotificationImpl impl = GWT.create(NotificationImpl.class);
 	
-	private int permission = -1;
+	private static int permission = -1;
 
 	private static NotificationSupportDetector supportDetectorImpl;
 
@@ -49,7 +49,7 @@ public class Notification {
 	 * 
 	 * @return true if user allow to use notification
 	 */
-	public boolean isNotificationAllowed() {
+	public static boolean isNotificationAllowed() {
 		checkPermission();
 		return permission == NotificationImpl.PERMISSION_ALLOWED;
 	}
@@ -59,7 +59,7 @@ public class Notification {
 	 * 
 	 * @return true if user doesn't set permission (never choose 'Allow' or 'Deny')
 	 */
-	public boolean isNotificationNotAllowed() {
+	public static boolean isNotificationNotAllowed() {
 		checkPermission();
 		return permission == NotificationImpl.PERMISSION_NOT_ALLOWED;
 	}
@@ -69,7 +69,7 @@ public class Notification {
 	 * 
 	 * @return true if user deny to use notification
 	 */
-	public boolean isNotificationDenied() {
+	public static boolean isNotificationDenied() {
 		checkPermission();
 		return permission == NotificationImpl.PERMISSION_DENIED;
 	}
@@ -78,7 +78,7 @@ public class Notification {
 	 * Get current status of notification permission
 	 * @return
 	 */
-	public int checkPermission() {
+	public static int checkPermission() {
 		if (permission == -1) {
 			permission = impl.checkPermission();
 		}
@@ -86,11 +86,11 @@ public class Notification {
 	}
 	
 	public static void requestPermission() {
-		impl.requestPermission();
+		impl.requestPermission(null);
 	}
 	
-	public static void requestPermission(RequestPermissionHandler handler) {
-		impl.requestPermission(handler);
+	public static void requestPermission(AsyncCallback<Void> callback) {
+		impl.requestPermission(callback);
 	}
 	
 	public static boolean isSupported() {
@@ -104,14 +104,30 @@ public class Notification {
 		return supportDetectorImpl;
 	}
 	
-	public static Notification createIfSupported() {
+	public static Notification createIfSupported(String contentUrl) {
 		if (isSupported()) {
 			if (notification == null) {
-				notification =  new Notification();
+				notification =  new Notification(contentUrl);
 			}
 			return notification;
 		}
 		return null;
+	}
+
+	private String contentUrl;
+	private String iconUrl;
+	private String title;
+	private String body;
+	
+	private Notification(String contentUrl) {
+		this.contentUrl = contentUrl;
+	}
+	
+	private Notification(String iconUrl, String title, String body) {
+		this.contentUrl = null;
+		this.iconUrl = iconUrl;
+		this.title = title;
+		this.body = body;
 	}
 
 }

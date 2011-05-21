@@ -12,10 +12,9 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class GWT_Notifications implements EntryPoint {
 	public void onModuleLoad() {
-		final Notification no = Notification.createIfSupported();
 		HTML notif = new HTML();
 		if (Notification.isSupported()) {
-			notif.setText("Supported "+no.checkPermission());
+			notif.setText("Supported "+Notification.checkPermission());
 		} else {
 			notif.setText("Unsupported");
 		}
