@@ -1,44 +1,59 @@
 package com.googlecode.gwt.notifications.client;
 
-import com.google.gwt.user.client.Window;
-import com.googlecode.gwt.notifications.client.event.RequestPermissionHandler;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class NotificationImpl {
 	public static final int PERMISSION_ALLOWED = 0;
 	public static final int PERMISSION_NOT_ALLOWED = 1;
 	public static final int PERMISSION_DENIED = 2;
-	private RequestPermissionHandler requestPermissionHandler;
+	private JavaScriptObject jsObject;
 
 	protected NotificationImpl() {
 		
-	}
-	
-	private void debug(String msg) {
-		Window.alert(msg);
 	}
 	
 	public native int checkPermission() /*-{
 		return $wnd.webkitNotifications.checkPermission();
 	}-*/;
 	
-	public void requestPermission() {
-		this.requestPermission(this);
-	}
-	
-	public void requestPermission(RequestPermissionHandler handler) {
-		this.requestPermissionHandler = handler;
-		this.requestPermission(this);
+	public void requestPermission(AsyncCallback<Void> callback) {
+		this.requestPermission(this, callback);
 	}
 
-	private void callbackRequestPermission() {
-		if (requestPermissionHandler != null) {
-			requestPermissionHandler.onPermissionReady();
-		}
-	}
-	
-	private native void requestPermission(NotificationImpl x) /*-{
+	private native void requestPermission(NotificationImpl x, AsyncCallback<Void> callback) /*-{
 		$wnd.webkitNotifications.requestPermission($entry(function() {
-			x.@com.googlecode.gwt.notifications.client.NotificationImpl::callbackRequestPermission()();
+			x.@com.googlecode.gwt.notifications.client.NotificationImpl::callbackRequestPermission(Lcom/google/gwt/user/client/rpc/AsyncCallback;)(callback);
 		}));
 	}-*/;
+
+	private void callbackRequestPermission(AsyncCallback<Void> callback) {
+		if (callback != null) {
+			callback.onSuccess(null);
+		}
+	}
+
+	public void createNotification(String iconUrl, String title, String body) {
+		this.jsObject = null;
+		this.jsObject = this.createJSNotification(iconUrl, title, body);
+	}
+
+	public void createNotification(String contentUrl) {
+		this.jsObject = null;
+		this.jsObject = this.createHtmlNotification(contentUrl);
+	}
+	
+	private native JavaScriptObject createJSNotification(String iconUrl, String title, String body) /*-{
+		return $wnd.webkitNotifications.createNotification(iconUrl, title, body);
+	}-*/;
+	
+	private native JavaScriptObject createHtmlNotification(String contentUrl) /*-{
+		return $wnd.webkitNotifications.createHTMLNotification(contentUrl);
+	}-*/;
+	
+	public native void show() /*-{
+		var obj = this.@com.googlecode.gwt.notifications.client.NotificationImpl::jsObject;
+		obj.show();
+	}-*/;
+	
 }
